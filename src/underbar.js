@@ -160,12 +160,6 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    // iterator = iterator || _.identity;
-    // if (accumulator === undefined) {
-    //   accumulator = collection[0];
-    // } else {
-    //   //accumulator = iterator;
-    // }
     _.each(collection, function(item) {
       var cache = iterator(accumulator, item);
       if (accumulator === undefined) {
@@ -192,7 +186,28 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+    // TIP: Try re-using reduce() here:: _.reduce = function(collection, iterator, accumulator) 
+    iterator = iterator || _.identity;
+    for (var i = 0; i < collection.length; i++) {
+      if (iterator(!!collection[i] === false)) {
+        return false;
+      }
+    }
+    return true;
+
+
+
+    // return _.reduce(collection, function(iterator, item, accumulator) {
+    //   if (!iterator(item)) {
+    //     accumulator = false;
+    //   }
+    // }, true);
+    // return _.reduce(collection, function(isTrue, item) {
+    //   if (!isTrue) {
+    //     return false;
+    //   }
+    //   return item === iterator(item);
+    // }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
