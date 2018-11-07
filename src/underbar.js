@@ -338,22 +338,20 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
-    var getRandomIndex = array[Math.floor(Math.random() * array.length)];
-    var copyArray = array.slice();
-    var results = [];
+    // var getRandomIndex = array[Math.floor(Math.random() * array.length)];
+    // var copyArray = array.slice();
+    // var results = [];
 
-    while (copyArray.length > 0) {
-      results.push(copyArray.pop(getRandomIndex));
-    }
-    return results;
-    // Math.floor(Math.random() * 11); 
-    // for (var i = 0; i < copyArray.length; i++) {
-    //   var poppedNumber = getRandomIndex;
-    //   copyArray.splice(poppedNumber,1);
-    //   results.push(poppedNumber);
-    //   i--;
+    // while (copyArray.length > 0) {
+    //   results.push(copyArray.pop(getRandomIndex));
     // }
     // return results;
+    var copyArray = array.slice();
+    var results = [];
+    for (var i = copyArray.length; i > 0; i--) {
+      results.push(copyArray.splice(Math.floor(Math.random() * copyArray.length), 1)[0]);
+    }
+    return results;
   };
 
 
@@ -368,6 +366,11 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    var results = [];
+    for (var i = 0; i < collection.length; i++) {
+      results.push(functionOrKey.apply(collection[i])); 
+    }
+    return results;
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -375,6 +378,16 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+  
+    var getType = function (collection, iterator) {
+      var obj = iterator(collection[0]);
+      for (var key in obj) {
+        return key;
+      }
+    }    
+
+    var valueType = getType(collection, iterator);  
+
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -383,6 +396,16 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var final = [];
+    for (var i = 0; i < arguments.length; i++) {
+      final.push([]);
+    }
+    for (var j = 0; j < arguments[0].length; j++) {
+      for (var k = 0; k < arguments.length; k++) {
+        final[j].push(arguments[j][k]);
+      }    
+    }
+    return final;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -390,16 +413,63 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var results = [];
+
+    var inArray = function(array) {
+      for (var i = 0; i < array.length; i++) {
+        if (Array.isArray(array[i])) {
+          inArray(array[i]);
+        } else {
+          results.push(array[i]);
+        }
+      }
+    }
+    inArray(nestedArray);
+    return results;
+    
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    //iterate through all argument arrays 
+    //for each value, check the other agument arrays if it contains. 
+    //if it contains, push, return at the end.
+    var results = [];
+    for (var j = 0; j < arguments[0].length; j++) {
+      var check = arguments[0][j];
+      var isThere = true;
+      for (var i = 1; i < arguments.length; i++) {
+        if (!arguments[i].includes(check)) {
+          var isThere = false;
+          break;
+        }
+      }
+      if (isThere) {
+        results.push(check);
+      }
+    }
+    return results;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var results = array.slice();
+    for (var j = 0; j < arguments[0].length; j++) {
+      var check = arguments[0][j];
+      var isThere = false;
+      for (var i = 1; i < arguments.length; i++) {
+        if (arguments[i].includes(check)) {
+          var isThere = true;
+          break;
+        }
+      }
+      if (isThere) {
+        results.splice(j,1);
+      }
+    }
+    return results;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
